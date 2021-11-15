@@ -3,6 +3,8 @@
     class="login-page d-flex flex-column align-center justify-center"
     fluid
   >
+    <Alert v-model="alert.open" :text="alert.text" />
+
     <FormsContainerCard
       title="Entre no sistema"
       text-btn-action="Entrar"
@@ -23,6 +25,9 @@
           :loading="loading"
           :filter-fields="filterFields"
         />
+        <nuxt-link class="text-center mb-6" to="/recovery">
+          Esqueceu a senha?
+        </nuxt-link>
       </ValidationObserver>
     </FormsContainerCard>
   </v-container>
@@ -32,9 +37,11 @@
 import { Vue, Component, Ref } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
 import { User } from '~/models/user'
+import { firebaseError } from '~/util/firebaseError'
 
 @Component({
   layout: 'blank',
+  middleware: ['ensure-unauth'],
 })
 export default class LoginPage extends Vue {
   @Ref('loginObserver')
@@ -43,6 +50,11 @@ export default class LoginPage extends Vue {
   form: Partial<User> = {}
 
   loading = false
+
+  alert = {
+    text: '',
+    open: false,
+  }
 
   get user() {
     return this.$store.state.user
@@ -62,7 +74,14 @@ export default class LoginPage extends Vue {
         .signInWithEmailAndPassword(this.form.email, this.form.password)
         .then(() => this.$router.replace('/'))
         .catch((err: any) => {
-          console.log(err)
+          console.log(err.code, err.message)
+
+          const text = firebaseError(err.code)
+
+          this.alert = {
+            text,
+            open: true,
+          }
         })
 
       this.loading = false

@@ -3,6 +3,8 @@
     class="register-page d-flex flex-column align-center justify-center"
     fluid
   >
+    <Alert v-model="alert.open" :text="alert.text" />
+
     <FormsContainerCard
       title="Olá visitante"
       text-btn-action="Criar conta"
@@ -27,6 +29,7 @@
 import { Vue, Component, Ref } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
 import { User } from '~/models/user'
+import { firebaseError } from '~/util/firebaseError'
 
 @Component({
   layout: 'blank',
@@ -39,6 +42,11 @@ export default class LoginPage extends Vue {
   form: Partial<User> = {}
 
   loading = false
+
+  alert = {
+    text: '',
+    open: false,
+  }
 
   get user() {
     return this.$store.state.user
@@ -57,6 +65,8 @@ export default class LoginPage extends Vue {
       delete (this.form as any).passwordRepeat
 
       let user: any = {}
+
+      console.log(user)
 
       Promise.all([
         // Insert user info in db
@@ -94,7 +104,14 @@ export default class LoginPage extends Vue {
           this.$router.replace('/verify-email')
         })
         .catch((err: any) => {
-          console.log(err)
+          console.log(err.code, err.message)
+
+          const text = firebaseError(err.code)
+
+          this.alert = {
+            text,
+            open: true,
+          }
         })
 
       this.loading = false
