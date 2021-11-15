@@ -16,7 +16,9 @@
 import { Component, Vue } from 'nuxt-property-decorator'
 import { MenuItem } from '~/components/SideBar.vue'
 
-@Component
+@Component({
+  middleware: ['auth'],
+})
 export default class DefaultLayout extends Vue {
   openSideBar = true
 
