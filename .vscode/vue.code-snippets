@@ -1,0 +1,17 @@
+{
+  "Class based component": {
+    "scope": "vue",
+    "prefix": "vue",
+    "body": [
+      "<script lang=\"ts\">",
+      "import { Vue, Component } from 'nuxt-property-decorator';",
+      "",
+      "@Component",
+      "export default class $1 extends Vue {",
+      "    $2",
+      "}",
+      "</script>",
+      ""
+    ]
+  }
+}

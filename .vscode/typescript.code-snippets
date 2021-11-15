@@ -1,0 +1,7 @@
+{
+  "Vue class based prop": {
+    "scope": "typescript",
+    "prefix": "vprop",
+    "body": ["@Prop($1)", "$2!: $3"]
+  }
+}
