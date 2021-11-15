@@ -24,7 +24,7 @@ for (const [rule, validation] of Object.entries(rules)) {
   })
 }
 
-// Custom rules.
+// Custom rules
 for (const [rule, validation] of Object.entries(customRules)) {
   extend(rule, {
     ...validation,
