@@ -18,17 +18,24 @@ export default class FormsLogin extends FormMixin {
     {
       label: 'E-mail',
       prop: 'email',
+      rules: ['required', 'email'],
     },
     {
       label: 'Senha',
       prop: 'password',
       type: 'password',
+      rules: [
+        'required',
+        'min:8',
+        this.addPasswordStrengthRule ? 'passwordStrength' : '',
+      ],
       appendIcon: this.appendIcon,
     },
     {
       label: 'Repita a senha',
       prop: 'passwordRepeat',
       type: 'password',
+      rules: ['required', 'confirmed:password'],
       appendIcon: this.appendIcon,
     },
   ]

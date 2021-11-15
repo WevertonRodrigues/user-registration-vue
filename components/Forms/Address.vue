@@ -11,23 +11,28 @@ export default class FormsAddress extends FormMixin {
   fields: Field[] = [
     {
       label: 'CEP',
-      prop: 'cep',      
+      prop: 'cep',
+      rules: ['required'],
     },
     {
       label: 'País',
-      prop: 'nation',      
+      prop: 'nation',
+      rules: ['required'],
     },
     {
       label: 'Estado',
-      prop: 'state',      
+      prop: 'state',
+      rules: ['required'],
     },
     {
       label: 'Cidade',
-      prop: 'city',      
+      prop: 'city',
+      rules: ['required'],
     },
     {
       label: 'Rua',
-      prop: 'street',      
+      prop: 'street',
+      rules: ['required'],
     },
     {
       label: 'Número',

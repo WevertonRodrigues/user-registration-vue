@@ -11,15 +11,18 @@ export default class FormsBasicInfo extends FormMixin {
   fields: Field[] = [
     {
       label: 'Nome',
-      prop: 'displayName',      
+      prop: 'displayName',
+      rules: ['required'],
     },
     {
       label: 'CPF',
-      prop: 'cpf',      
+      prop: 'cpf',
+      rules: ['required'],
     },
     {
       label: 'PIS',
-      prop: 'pis',      
+      prop: 'pis',
+      rules: ['required'],
     },
   ]
 }
