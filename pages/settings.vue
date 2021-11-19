@@ -112,7 +112,6 @@ export default class SettingsPage extends Vue {
       .then((doc: any) => {
         if (doc.exists) {
           this.form = { ...doc.data(), password: '' }
-          console.log(doc.data())
 
           this.passwordConfirm.oldValue = doc.data().password
         }
@@ -131,7 +130,6 @@ export default class SettingsPage extends Vue {
 
     if (valid) {
       this.loading = true
-      await new Promise((resolve) => setTimeout(resolve, 2500))
 
       const docRef = this.$fire.firestore
         .collection('users')
@@ -139,7 +137,7 @@ export default class SettingsPage extends Vue {
 
       const user = this.$fire.auth.currentUser
 
-      Promise.all([
+      await Promise.all([
         docRef.update({
           ...this.form,
           password: this.passwordConfirm.oldValue,
