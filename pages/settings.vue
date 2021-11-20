@@ -5,6 +5,8 @@
   >
     <Alert v-model="alert.open" :text="alert.text" type="success" />
 
+    {{ form }}
+
     <FormsContainerCard
       title="Altere seus dados"
       text-btn-action="Salvar alterações"
@@ -53,17 +55,7 @@ export default class SettingsPage extends Vue {
     open: false,
   }
 
-  form: Partial<User> = {
-    address: {
-      cep: '',
-      nation: '',
-      state: '',
-      city: '',
-      street: '',
-      number: '',
-      complement: '',
-    },
-  }
+  form: User = {} as User
 
   passwordConfirm = {
     openDialog: false,

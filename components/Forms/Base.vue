@@ -2,25 +2,26 @@
   <v-container class="pa-0">
     <!-- Fields -->
     <ValidationProvider
-      v-for="(field, index) in fields"
-      :key="index"
+      v-for="field in fields"
+      :key="field.prop"
       v-slot="{ errors }"
       class="mb-4"
       tag="div"
       :vid="field.prop"
-      :rules="field.rules ? field.rules.join('|') : ''"
+      :rules="normalizeRules(field)"
       :name="field.label"
     >
       <v-text-field
         :value="getValue()[field.prop]"
         :label="field.label"
-        :error-messages="errors"
+        :error-messages="errors.concat(field.errors || [])"
         :type="field.type"
         :disabled="loading"
         :append-icon="field.appendIcon && field.appendIcon.icon"
         outlined
         @click:append="field.appendIcon.click(field)"
         @input="setValue({ propName: field.prop, value: $event })"
+        @change="$emit('input', getValue())"
       >
       </v-text-field>
     </ValidationProvider>
@@ -28,8 +29,12 @@
 </template>
 <script lang="ts">
 import { Component } from 'nuxt-property-decorator'
-import FormBaseMixin from '~/mixins/formBaseMixin'
+import FormBaseMixin, { Field } from '~/mixins/formBaseMixin'
 
 @Component
-export default class FormsBase extends FormBaseMixin {}
+export default class FormsBase extends FormBaseMixin {
+  normalizeRules(field: Field) {
+    return !field.rules?.length ? field.rules : (field?.rules || ['']).join('|')
+  }
+}
 </script>

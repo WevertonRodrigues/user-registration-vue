@@ -1,1 +1,1 @@
-export * from './firebaseError'
+export * from './alertError'

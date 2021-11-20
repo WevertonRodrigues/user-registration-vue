@@ -29,7 +29,7 @@
 import { Vue, Component, Ref } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
 import { User } from '~/models/user'
-import { firebaseError } from '~/util/firebaseError'
+import { alertError } from '~/util/alertError'
 
 @Component({
   layout: 'blank',
@@ -106,7 +106,7 @@ export default class LoginPage extends Vue {
         .catch((err: any) => {
           console.log(err.code, err.message)
 
-          const text = firebaseError(err.code)
+          const text = alertError(err.code)
 
           this.alert = {
             text,

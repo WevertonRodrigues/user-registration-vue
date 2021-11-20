@@ -5,7 +5,7 @@ export interface Field {
   label: string
   prop?: string
   type?: string
-  rules?: string[]
+  rules?: string[] | Record<string, any>
   appendIcon?: {
     icon: string
     click: (field: Field) => void

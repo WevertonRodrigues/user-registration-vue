@@ -26,7 +26,7 @@
           <h3 class="mb-2">Endereço</h3>
           <v-divider />
         </div>
-        <FormsAddress v-model="form" :loading="loading" />
+        <FormsAddress v-model="form.address" :loading="loading" />
       </v-col>
     </v-row>
   </v-container>
@@ -43,5 +43,19 @@ export default class FormsMain extends FormMixin {
 
   @Prop(Boolean)
   addPasswordStrengthRule!: boolean
+
+  created() {
+    this.form = {
+      address: {
+        cep: '',
+        city: '',
+        complement: '',
+        nation: '',
+        number: '',
+        state: '',
+        street: '',
+      },
+    }
+  }
 }
 </script>
