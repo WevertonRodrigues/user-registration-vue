@@ -6,6 +6,7 @@ export interface Field {
   prop?: string
   type?: string
   rules?: string[] | Record<string, any>
+  mask?: string
   appendIcon?: {
     icon: string
     click: (field: Field) => void

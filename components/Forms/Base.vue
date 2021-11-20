@@ -12,6 +12,7 @@
       :name="field.label"
     >
       <v-text-field
+        v-mask="field.mask"
         :value="getValue()[field.prop]"
         :label="field.label"
         :error-messages="errors.concat(field.errors || [])"

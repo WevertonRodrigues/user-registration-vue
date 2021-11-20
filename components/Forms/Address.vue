@@ -20,6 +20,7 @@ export default class FormsAddress extends FormMixin {
       label: 'CEP',
       prop: 'cep',
       rules: { required: true, regex: /^[0-9]{5}-[0-9]{3}$/ },
+      mask: '#####-###',
     },
     {
       label: 'País',
@@ -41,11 +42,11 @@ export default class FormsAddress extends FormMixin {
       prop: 'street',
       rules: ['required'],
     },
-    {
+    /* {
       label: 'Bairro',
       prop: 'district',
       rules: ['required'],
-    },
+    }, */
     {
       label: 'Número',
       prop: 'number',
@@ -104,6 +105,8 @@ export default class FormsAddress extends FormMixin {
           : Promise.reject(new Error('cep-not-found'))
       })
     }
+
+    return Promise.reject(new Error('cep-not-found'))
   }
 }
 </script>

@@ -18,6 +18,7 @@ export default class FormsBasicInfo extends FormMixin {
       label: 'CPF',
       prop: 'cpf',
       rules: ['required'],
+      mask: '###.###.###-##',
     },
     {
       label: 'PIS',
