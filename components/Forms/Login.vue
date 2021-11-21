@@ -2,7 +2,7 @@
   <FormsBase v-model="form" v-bind="{ fields: fieldsFiltered, loading }" />
 </template>
 <script lang="ts">
-import { Component, Prop } from 'nuxt-property-decorator'
+import { Component, Prop, Watch } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
 import FormMixin from '~/mixins/formMixin'
 
@@ -11,8 +11,15 @@ export default class FormsLogin extends FormMixin {
   @Prop({ type: Function, default: () => true })
   filterFields!: (item: any) => boolean
 
-  @Prop(Boolean)
-  addPasswordStrengthRule!: boolean
+  @Prop({ type: Object, default: () => null })
+  config!: Record<string, Partial<Field>> | null
+
+  @Watch('config', { deep: true })
+  onConfigChange(value: Record<string, Partial<Field>>) {
+    this.fields.map((field) =>
+      Object.assign(field, value?.[field?.prop ?? ''] ?? {})
+    )
+  }
 
   fields: Field[] = [
     {
@@ -24,11 +31,7 @@ export default class FormsLogin extends FormMixin {
       label: 'Senha',
       prop: 'password',
       type: 'password',
-      rules: [
-        'required',
-        'min:8',
-        this.addPasswordStrengthRule ? 'passwordStrength' : '',
-      ],
+      rules: ['required', 'min:8', 'passwordStrength'],
       appendIcon: this.appendIcon,
     },
     {
@@ -39,6 +42,12 @@ export default class FormsLogin extends FormMixin {
       appendIcon: this.appendIcon,
     },
   ]
+
+  created() {
+    if (this.config) {
+      this.onConfigChange(this.config)
+    }
+  }
 
   get fieldsFiltered() {
     return this.fields.filter(this.filterFields)

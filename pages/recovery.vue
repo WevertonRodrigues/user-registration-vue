@@ -1,7 +1,6 @@
 <template>
   <v-container
     class="login-page d-flex flex-column align-center justify-center"
-    fluid
   >
     <Alert v-model="alert.open" :text="alert.text" :type="alert.type" />
 
@@ -61,6 +60,7 @@ export default class RecoveryPage extends Vue {
   }
 
   async submit() {
+    this.loading = true
     const valid = await this.recoveryObserver.validate()
 
     if (valid) {
@@ -85,6 +85,8 @@ export default class RecoveryPage extends Vue {
           }
         })
     }
+
+    this.loading = false
   }
 }
 </script>

@@ -24,8 +24,9 @@
           v-model="form"
           :loading="loading"
           :filter-fields="filterFields"
+          :config="loginConfig"
         />
-        <nuxt-link class="text-center mb-6" to="/recovery">
+        <nuxt-link class="text-center align-self-center mb-6" to="/recovery">
           Esqueceu a senha?
         </nuxt-link>
       </ValidationObserver>
@@ -56,6 +57,12 @@ export default class LoginPage extends Vue {
     open: false,
   }
 
+  loginConfig: Record<string, Partial<Field>> = {
+    password: {
+      rules: ['required'],
+    },
+  }
+
   get user() {
     return this.$store.state.user
   }
@@ -65,11 +72,10 @@ export default class LoginPage extends Vue {
   }
 
   async submit() {
+    this.loading = true
     const valid = await this.loginObserver.validate()
 
     if (valid) {
-      this.loading = true
-
       await this.$fire.auth
         .signInWithEmailAndPassword(this.form.email, this.form.password)
         .then(() => this.$router.replace('/'))
@@ -83,9 +89,8 @@ export default class LoginPage extends Vue {
             open: true,
           }
         })
-
-      this.loading = false
     }
+    this.loading = false
   }
 }
 </script>

@@ -14,7 +14,7 @@
             v-model="form"
             :loading="loading"
             :filter-fields="filterLoginFields"
-            :add-password-strength-rule="addPasswordStrengthRule"
+            :config="loginConfig"
           />
         </div>
       </v-col>
@@ -41,21 +41,7 @@ export default class FormsMain extends FormMixin {
   @Prop({ type: Function, default: () => true })
   filterLoginFields!: (item: Field) => boolean
 
-  @Prop(Boolean)
-  addPasswordStrengthRule!: boolean
-
-  created() {
-    this.form = {
-      address: {
-        cep: '',
-        city: '',
-        complement: '',
-        nation: '',
-        number: '',
-        state: '',
-        street: '',
-      },
-    }
-  }
+  @Prop({ type: Object, default: () => null })
+  loginConfig!: Record<string, Partial<Field>> | null
 }
 </script>

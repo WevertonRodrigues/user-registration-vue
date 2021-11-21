@@ -7,6 +7,7 @@ export interface Field {
   type?: string
   rules?: string[] | Record<string, any>
   mask?: string
+  customMessages?: Record<string, any>
   appendIcon?: {
     icon: string
     click: (field: Field) => void

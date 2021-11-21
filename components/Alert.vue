@@ -28,6 +28,6 @@ export default class Alert extends Vue {
 
 <style lang="scss">
 .alert {
-  width: 90%;
+  width: 100%;
 }
 </style>

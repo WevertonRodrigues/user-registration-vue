@@ -10,6 +10,7 @@
       :vid="field.prop"
       :rules="normalizeRules(field)"
       :name="field.label"
+      :custom-messages="field.customMessages"
     >
       <v-text-field
         v-mask="field.mask"

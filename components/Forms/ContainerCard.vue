@@ -1,5 +1,5 @@
 <template>
-  <v-card :loading="loading" width="90%">
+  <v-card :loading="loading" width="100%">
     <v-card-title class="accent">
       <v-container fluid class="text-center">
         <h4 class="font-weight-medium">{{ title }}</h4>
@@ -15,7 +15,12 @@
     <v-card-actions class="px-6 pb-4">
       <v-spacer />
       <slot name="footer-area"></slot>
-      <v-btn class="px-8" :loading="loading" @click="$emit('btnAction')">
+      <v-btn
+        class="px-8"
+        :loading="loading"
+        :disabled="disabledBtnAction"
+        @click="$emit('btnAction')"
+      >
         {{ textBtnAction }}
       </v-btn>
     </v-card-actions>
@@ -34,5 +39,8 @@ export default class ContainerCardForm extends Vue {
 
   @Prop(Boolean)
   loading!: boolean
+
+  @Prop(Boolean)
+  disabledBtnAction!: boolean
 }
 </script>

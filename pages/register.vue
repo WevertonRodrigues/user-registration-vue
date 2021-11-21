@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    class="register-page d-flex flex-column align-center justify-center"
-    fluid
-  >
+  <v-container class="d-flex flex-column align-center justify-center">
     <Alert v-model="alert.open" :text="alert.text" />
 
     <FormsContainerCard
@@ -15,11 +12,7 @@
         <nuxt-link to="/login" class="mr-6">Já possui conta?</nuxt-link>
       </template>
       <ValidationObserver ref="registerObserver" class="mx-2" tag="v-form">
-        <FormsMain
-          v-model="form"
-          :loading="loading"
-          add-password-strength-rule
-        />
+        <FormsMain v-model="form" :loading="loading" />
       </ValidationObserver>
     </FormsContainerCard>
   </v-container>
@@ -39,7 +32,18 @@ export default class LoginPage extends Vue {
   @Ref('registerObserver')
   registerObserver!: any
 
-  form: Partial<User> = {}
+  form: User = {
+    address: {
+      cep: '',
+      nation: '',
+      state: '',
+      city: '',
+      street: '',
+      district: '',
+      number: '',
+      complement: '',
+    },
+  } as User
 
   loading = false
 
@@ -57,23 +61,24 @@ export default class LoginPage extends Vue {
   }
 
   async submit() {
+    this.loading = true
     const valid = await this.registerObserver.validate()
 
     if (valid) {
-      this.loading = true
-
       delete (this.form as any).passwordRepeat
 
       let user: any = {}
 
-      console.log(user)
+      const ref = this.$fire.firestore.collection('users')
 
       Promise.all([
         // Insert user info in db
-        this.$fire.firestore
-          .collection('users')
-          .doc(this.form.email)
-          .set(this.form),
+        ref.add(this.form).then((docRef: any) => {
+          docRef.update({
+            ...this.form,
+            uuid: docRef.id,
+          })
+        }),
         // Insert profile
         this.$fire.auth
           .createUserWithEmailAndPassword(this.form.email, this.form.password)
@@ -113,9 +118,8 @@ export default class LoginPage extends Vue {
             open: true,
           }
         })
-
-      this.loading = false
     }
+    this.loading = false
   }
 }
 </script>

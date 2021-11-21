@@ -1,45 +1,49 @@
 <template>
-  <v-container
-    class="register-page d-flex flex-column align-center justify-center"
-    fluid
-  >
+  <v-container class="d-flex flex-column align-center justify-center" fluid>
     <Alert v-model="alert.open" :text="alert.text" type="success" />
 
-    {{ form }}
-
+    <!-- {{ form }} -->
     <FormsContainerCard
       title="Altere seus dados"
       text-btn-action="Salvar alterações"
-      @btnAction="openConfirmationDialog"
+      :disabled-btn-action="hasDiff"
+      @btnAction="openPasswordConfirm()"
     >
       <ValidationObserver ref="settingsObserver" tag="v-form">
-        <FormsMain v-model="form" :filter-login-fields="filterLoginFields" />
+        <FormsMain v-model="form" :login-config="loginConfig" />
       </ValidationObserver>
-      {{ user }}
     </FormsContainerCard>
 
     <v-dialog v-model="passwordConfirm.openDialog">
-      <FormsContainerCard
-        title="Confirme a senha"
-        text-btn-action="Confirmar alterações"
-        :loading="loading"
-        @btnAction="submit"
+      <ValidationObserver
+        ref="confirmObserver"
+        v-slot="{ invalid }"
+        tag="v-form"
       >
-        {{ passwordConfirm }}
-        <FormsBase
-          v-model="passwordConfirm"
+        <FormsContainerCard
+          title="Confirme a senha atual"
+          text-btn-action="Confirmar alterações"
           :loading="loading"
-          :fields="fieldPasswordConfirm"
-        />
-      </FormsContainerCard>
+          :disabled-btn-action="invalid"
+          @btnAction="submit"
+        >
+          <FormsBase
+            v-model="passwordConfirm"
+            class="mt-6"
+            :loading="loading"
+            :fields="fieldPasswordConfirm"
+          />
+        </FormsContainerCard>
+      </ValidationObserver>
     </v-dialog>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Ref } from 'nuxt-property-decorator'
+import { isEqual } from 'lodash'
+import { Vue, Component, Ref, Watch } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
-import { User } from '~/models'
+import { User } from '~/models/user'
 
 @Component({
   middleware: ['verify-email'],
@@ -48,7 +52,11 @@ export default class SettingsPage extends Vue {
   @Ref('settingsObserver')
   settingsObserver!: any
 
+  @Ref('confirmObserver')
+  confirmObserver!: any
+
   loading = false
+  hasDiff = false
 
   alert = {
     text: '',
@@ -56,19 +64,22 @@ export default class SettingsPage extends Vue {
   }
 
   form: User = {} as User
+  originalForm: User = {} as User
 
   passwordConfirm = {
     openDialog: false,
     value: '',
-    oldValue: '',
   }
 
   fieldPasswordConfirm: Field[] = [
     {
-      label: 'Confirme a senha atual',
+      label: 'Senha atual',
       prop: 'value',
       type: 'password',
-      rules: ['required', 'confirmed:oldValue'],
+      rules: ['required'],
+      customMessages: {
+        is: 'Valor da senha atual inválido',
+      },
       appendIcon: {
         icon: 'mdi-eye',
         click: (field: Field) => {
@@ -88,83 +99,167 @@ export default class SettingsPage extends Vue {
     },
   ]
 
+  @Watch('form', { deep: true })
+  onWatchChange(value: User) {
+    this.hasDiff = isEqual(this.originalForm, value)
+  }
+
   get user() {
     return this.$store.state.user.user
   }
 
-  filterLoginFields(item: Field) {
-    return item.prop === 'email'
+  get loginConfig() {
+    return {
+      password: {
+        label: 'Nova senha',
+        rules: ['min:8', 'passwordStrength'],
+      },
+      passwordRepeat: {
+        label: 'Repita a nova senha',
+        rules: [this.form.password ? 'required' : '', 'confirmed:password'],
+      },
+    }
   }
 
   async created() {
-    const docRef = this.$fire.firestore.collection('users').doc(this.user.email)
+    await this.loadForm()
+  }
 
-    await docRef
+  async loadForm() {
+    // Get document ref base in actual user
+    const usersRef = this.$fire.firestore.collection('users')
+
+    // Get document based in previous ref
+    await usersRef
+      .where('email', '==', this.user.email)
       .get()
-      .then((doc: any) => {
-        if (doc.exists) {
-          this.form = { ...doc.data(), password: '' }
+      .then((querySnapshot: any) => {
+        querySnapshot.forEach((doc: any) => {
+          if (doc.exists) {
+            // Save doc to form variable
+            this.form = { ...doc.data(), password: '' }
 
-          this.passwordConfirm.oldValue = doc.data().password
-        }
-      })
-      .catch((err: any) => {
-        console.log('Error getting document:', err)
+            // Save doc in a 'original' variable
+            Object.assign(this.originalForm, { ...doc.data(), password: '' })
+
+            // Save currentPassword
+            this.$set(
+              this.fieldPasswordConfirm[0].rules ?? {},
+              1,
+              `is:${doc.data().password}`
+            )
+          }
+        })
       })
   }
 
-  openConfirmationDialog() {
-    this.passwordConfirm.openDialog = true
-  }
-
-  async submit() {
+  async openPasswordConfirm() {
     const valid = await this.settingsObserver.validate()
 
     if (valid) {
-      this.loading = true
-
-      const docRef = this.$fire.firestore
-        .collection('users')
-        .doc(this.user.email)
-
-      const user = this.$fire.auth.currentUser
-
-      await Promise.all([
-        docRef.update({
-          ...this.form,
-          password: this.passwordConfirm.oldValue,
-        }),
-        user.updateProfile({
-          displayName: this.form.displayName,
-          email: this.form.email,
-        }),
-      ])
-        .then(() => {
-          const { uid, email, emailVerified } = user
-
-          this.$store.dispatch('user/onAuthStateChangedAction', {
-            authUser: {
-              uid,
-              email,
-              emailVerified,
-              displayName: this.form.displayName,
-            },
-          })
-
-          this.passwordConfirm.openDialog = false
-
-          this.alert = {
-            text: 'Perfil atualizado com sucesso.',
-            open: true,
-          }
-        })
-        .catch((err: any) => {
-          // The document probably doesn't exist.
-          console.error('Error updating document: ', err)
-        })
-
-      this.loading = false
+      this.passwordConfirm.openDialog = true
     }
+  }
+
+  triggerAuthMethod(user: any, { value, method }: any) {
+    if (value) {
+      return user[method](value)
+    }
+
+    return Promise.resolve()
+  }
+
+  async updateAuth(user: any, options: any[]) {
+    // If password was changed, update
+    return await Promise.all(
+      options.map((opt: any) => this.triggerAuthMethod(user, opt))
+    ).catch(async () => {
+      // In error case reauthenticate current user with old credentials
+      const credential = this.$fireModule.auth.EmailAuthProvider.credential(
+        this.originalForm.email,
+        this.passwordConfirm.value
+      )
+
+      await user.reauthenticateWithCredential(credential)
+    })
+  }
+
+  setVuexUser(user: any) {
+    const { uid, email, emailVerified } = user
+
+    // Set vuex user
+    this.$store.dispatch('user/onAuthStateChangedAction', {
+      authUser: {
+        uid,
+        email,
+        emailVerified,
+        displayName: this.form.displayName,
+      },
+    })
+  }
+
+  async submit() {
+    // Set the card loading
+    this.loading = true
+
+    delete (this.form as any).passwordRepeat
+
+    // Get document ref base in actual user
+    const docRef = this.$fire.firestore.collection('users').doc(this.form.uuid)
+
+    // Get firebase current logged user
+    const user = this.$fire.auth.currentUser
+
+    await Promise.all([
+      // Update email and password
+      this.updateAuth(user, [
+        {
+          value:
+            this.form.email !== this.originalForm.email
+              ? this.form.email
+              : null,
+          method: 'updateEmail',
+        },
+        {
+          value: this.form.password,
+          method: 'updatePassword',
+        },
+      ]),
+      // Update profile
+      user.updateProfile({
+        displayName: this.form.displayName,
+        email: this.form.email,
+      }),
+      // Update document
+      docRef.update({
+        ...this.form,
+        password:
+          this.form.password !== ''
+            ? this.form.password
+            : this.passwordConfirm.value,
+      }),
+      // Reload form
+      this.loadForm(),
+    ]).then(() => {
+      this.setVuexUser(this.$fire.auth.currentUser)
+
+      this.passwordConfirm.openDialog = false
+
+      this.alert = {
+        text: 'Perfil atualizado com sucesso.',
+        open: true,
+      }
+
+      if (this.form.email !== this.originalForm.email) {
+        user
+          .sendEmailVerification({
+            url: window.document.location.origin,
+          })
+          .then(() => this.$router.replace('/verify-email'))
+      }
+    })
+
+    this.loading = false
   }
 }
 </script>
