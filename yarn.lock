@@ -1345,6 +1345,11 @@
   resolved "https://registry.yarnpkg.com/@firebase/webchannel-wrapper/-/webchannel-wrapper-0.6.1.tgz#0c74724ba6e9ea6ad25a391eab60a79eaba4c556"
   integrity sha512-9FqhNjKQWpQ3fGnSOCovHOm+yhhiorKEqYLAfd525jWavunDJcx8rOW6i6ozAh+FbwcYMkL7b+3j4UR/30MpoQ==
 
+"@fnando/cpf@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@fnando/cpf/-/cpf-1.0.2.tgz#e78c46c5ee599b17f5d81b46c336b0e6eec8ace4"
+  integrity sha512-lfSfdONVQ/1aKvsA7PnawQjSoE5PXOyHich3WFIbAuYRMAw6Ax1FmIWxPxCfHP/Rh0R2cG/CxaimUW7NI6rgEQ==
+
 "@gar/promisify@^1.0.1":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.2.tgz#30aa825f11d438671d585bd44e7fd564535fc210"

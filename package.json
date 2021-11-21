@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fnando/cpf": "^1.0.2",
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/firebase": "^8.0.0",
     "@types/lodash.isequal": "^4.5.5",
