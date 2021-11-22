@@ -7,18 +7,22 @@
         <h3 class="mb-2">Informações básicas</h3>
         <v-divider />
       </div>
-      <FormsBasicInfo
-        v-model="form"
-        :loading="loading"
-        @enter="$emit('enter')"
-      />
-      <FormsLogin
-        v-model="form"
-        :loading="loading"
-        :filter-fields="filterLoginFields"
-        :config="loginConfig"
-        @enter="$emit('enter')"
-      />
+      <div :class="[{ 'gap-skeleton': skeletonLoading }]">
+        <FormsBasicInfo
+          v-model="form"
+          :loading="loading"
+          :skeleton-loading="skeletonLoading"
+          @enter="$emit('enter')"
+        />
+        <FormsLogin
+          v-model="form"
+          :loading="loading"
+          :filter-fields="filterLoginFields"
+          :config="loginConfig"
+          :skeleton-loading="skeletonLoading"
+          @enter="$emit('enter')"
+        />
+      </div>
     </v-col>
 
     <!-- Col 2 -->
@@ -31,6 +35,7 @@
       <FormsAddress
         v-model="form.address"
         :loading="loading"
+        :skeleton-loading="skeletonLoading"
         @enter="$emit('enter')"
       />
     </v-col>
@@ -50,3 +55,12 @@ export default class FormsMain extends FormMixin {
   loginConfig!: Record<string, Partial<Field>> | null
 }
 </script>
+<style lang="scss">
+.forms-main {
+  .gap-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1.885em !important;
+  }
+}
+</style>

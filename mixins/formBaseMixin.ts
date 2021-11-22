@@ -37,4 +37,14 @@ export default class FormBaseMixin extends FormMixin {
 
   @Prop({ type: Array, default: () => [] })
   fields!: Field[]
+
+  normalizeRules(field: Field) {
+    return !field.rules?.length ? field.rules : (field?.rules || ['']).join('|')
+  }
+
+  keydowEmit(evt: KeyboardEvent) {
+    if (evt.code === 'Enter') {
+      this.$emit('enter')
+    }
+  }
 }

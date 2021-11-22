@@ -7,4 +7,7 @@ export default class FormMixin extends Vue {
 
   @Prop(Boolean)
   loading!: boolean
+
+  @Prop({ type: Boolean, default: false })
+  skeletonLoading!: boolean
 }

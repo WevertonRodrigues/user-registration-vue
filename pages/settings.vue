@@ -15,7 +15,7 @@
       >
         <FormsMain
           v-model="form"
-          :login-config="loginConfig"
+          v-bind="{ loginConfig, skeletonLoading }"
           @enter="checkCanCall(hasDiff, openPasswordConfirm)"
         />
       </ValidationObserver>
@@ -70,6 +70,7 @@ export default class SettingsPage extends Vue {
 
   loading = false
   hasDiff = false
+  skeletonLoading = true
 
   alert = {
     text: '',
@@ -161,6 +162,9 @@ export default class SettingsPage extends Vue {
               1,
               `is:${doc.data().password}`
             )
+
+            // Disable skeleton loader
+            this.skeletonLoading = false
           }
         })
       })

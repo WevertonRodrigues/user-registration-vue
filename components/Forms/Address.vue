@@ -1,8 +1,7 @@
 <template>
   <FormsBase
-    v-if="form"
     :value="form"
-    v-bind="{ fields, loading }"
+    v-bind="{ fields, loading, skeletonLoading }"
     v-on="{ ...$listeners }"
     @input="handleAddressChange"
   />

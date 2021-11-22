@@ -1,7 +1,7 @@
 <template>
   <FormsBase
     v-model="form"
-    v-bind="{ fields: fieldsFiltered, loading }"
+    v-bind="{ fields: fieldsFiltered, loading, skeletonLoading }"
     v-on="{ ...$listeners }"
   />
 </template>

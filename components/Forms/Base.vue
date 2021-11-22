@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="['forms-base', { 'gap-skeleton': skeletonLoading }]">
     <!-- Fields -->
     <ValidationProvider
       v-for="field in fields"
@@ -11,7 +11,10 @@
       :name="field.label"
       :custom-messages="field.customMessages"
     >
+      <v-skeleton-loader v-if="skeletonLoading" class="rounded" type="button">
+      </v-skeleton-loader>
       <v-text-field
+        v-else
         v-mask="field.mask"
         :value="getValue()[field.prop]"
         :label="field.label"
@@ -31,18 +34,23 @@
 </template>
 <script lang="ts">
 import { Component } from 'nuxt-property-decorator'
-import FormBaseMixin, { Field } from '~/mixins/formBaseMixin'
+import FormBaseMixin from '~/mixins/formBaseMixin'
 
 @Component
-export default class FormsBase extends FormBaseMixin {
-  normalizeRules(field: Field) {
-    return !field.rules?.length ? field.rules : (field?.rules || ['']).join('|')
+export default class FormsBase extends FormBaseMixin {}
+</script>
+<style lang="scss">
+.forms-base {
+  &.gap-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1.885em !important;
   }
-
-  keydowEmit(evt: KeyboardEvent) {
-    if (evt.code === 'Enter') {
-      this.$emit('enter')
+  .v-skeleton-loader {
+    &__bone {
+      width: 100%;
+      height: 56px;
     }
   }
 }
-</script>
+</style>
