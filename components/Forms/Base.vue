@@ -1,11 +1,10 @@
 <template>
-  <v-container class="pa-0">
+  <div>
     <!-- Fields -->
     <ValidationProvider
       v-for="field in fields"
       :key="field.prop"
       v-slot="{ errors }"
-      class="mb-4"
       tag="div"
       :vid="field.prop"
       :rules="normalizeRules(field)"
@@ -21,13 +20,14 @@
         :disabled="loading"
         :append-icon="field.appendIcon && field.appendIcon.icon"
         outlined
+        @keydown="keydowEmit"
         @click:append="field.appendIcon.click(field)"
         @input="setValue({ propName: field.prop, value: $event })"
         @change="$emit('input', getValue())"
       >
       </v-text-field>
     </ValidationProvider>
-  </v-container>
+  </div>
 </template>
 <script lang="ts">
 import { Component } from 'nuxt-property-decorator'
@@ -37,6 +37,12 @@ import FormBaseMixin, { Field } from '~/mixins/formBaseMixin'
 export default class FormsBase extends FormBaseMixin {
   normalizeRules(field: Field) {
     return !field.rules?.length ? field.rules : (field?.rules || ['']).join('|')
+  }
+
+  keydowEmit(evt: KeyboardEvent) {
+    if (evt.code === 'Enter') {
+      this.$emit('enter')
+    }
   }
 }
 </script>

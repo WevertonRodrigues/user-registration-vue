@@ -1,37 +1,50 @@
 <template>
-  <v-container class="d-flex flex-column align-center justify-center" fluid>
+  <v-container class="d-flex flex-column align-center justify-center">
     <Alert v-model="alert.open" :text="alert.text" type="success" />
 
-    <!-- {{ form }} -->
     <FormsContainerCard
       title="Altere seus dados"
       text-btn-action="Salvar alterações"
-      :disabled-btn-action="hasDiff"
-      @btnAction="openPasswordConfirm()"
+      :disabled-btn-action="!hasDiff"
+      @btnAction="openPasswordConfirm"
     >
-      <ValidationObserver ref="settingsObserver" tag="v-form">
-        <FormsMain v-model="form" :login-config="loginConfig" />
+      <ValidationObserver
+        ref="settingsObserver"
+        tag="v-form"
+        @submit.prevent="checkCanCall(hasDiff, openPasswordConfirm)"
+      >
+        <FormsMain
+          v-model="form"
+          :login-config="loginConfig"
+          @enter="checkCanCall(hasDiff, openPasswordConfirm)"
+        />
       </ValidationObserver>
     </FormsContainerCard>
 
-    <v-dialog v-model="passwordConfirm.openDialog">
+    <!-- Dialog password confirm -->
+    <v-dialog
+      v-model="passwordConfirm.openDialog"
+      @click:outside="resetPasswordConfirm()"
+    >
       <ValidationObserver
         ref="confirmObserver"
         v-slot="{ invalid }"
         tag="v-form"
+        @submit.prevent="submit"
       >
         <FormsContainerCard
           title="Confirme a senha atual"
           text-btn-action="Confirmar alterações"
           :loading="loading"
           :disabled-btn-action="invalid"
-          @btnAction="submit"
+          @btnAction="checkCanCall(invalid === false, submit)"
         >
           <FormsBase
             v-model="passwordConfirm"
             class="mt-6"
             :loading="loading"
             :fields="fieldPasswordConfirm"
+            @enter="checkCanCall(invalid === false, submit)"
           />
         </FormsContainerCard>
       </ValidationObserver>
@@ -101,7 +114,7 @@ export default class SettingsPage extends Vue {
 
   @Watch('form', { deep: true })
   onWatchChange(value: User) {
-    this.hasDiff = isEqual(this.originalForm, value)
+    this.hasDiff = isEqual(this.originalForm, value) !== true
   }
 
   get user() {
@@ -153,22 +166,6 @@ export default class SettingsPage extends Vue {
       })
   }
 
-  async openPasswordConfirm() {
-    const valid = await this.settingsObserver.validate()
-
-    if (valid) {
-      this.passwordConfirm.openDialog = true
-    }
-  }
-
-  triggerAuthMethod(user: any, { value, method }: any) {
-    if (value) {
-      return user[method](value)
-    }
-
-    return Promise.resolve()
-  }
-
   async updateAuth(user: any, options: any[]) {
     // If password was changed, update
     return await Promise.all(
@@ -198,67 +195,95 @@ export default class SettingsPage extends Vue {
     })
   }
 
+  async openPasswordConfirm() {
+    const valid = await this.settingsObserver.validate()
+
+    if (valid) {
+      this.passwordConfirm.openDialog = true
+    }
+  }
+
+  triggerAuthMethod(user: any, { value, method }: any) {
+    return this.checkCanCall(value, user[method](value)) ?? Promise.resolve()
+  }
+
+  checkCanCall(condition: boolean, method: () => null) {
+    if (condition) method()
+
+    return false
+  }
+
+  resetPasswordConfirm() {
+    this.passwordConfirm = { value: '', openDialog: false }
+    this.confirmObserver.reset()
+  }
+
   async submit() {
     // Set the card loading
     this.loading = true
 
-    delete (this.form as any).passwordRepeat
+    const valid = await this.confirmObserver.validate()
 
-    // Get document ref base in actual user
-    const docRef = this.$fire.firestore.collection('users').doc(this.form.uuid)
+    if (valid) {
+      delete (this.form as any).passwordRepeat
 
-    // Get firebase current logged user
-    const user = this.$fire.auth.currentUser
+      // Get document ref base in actual user
+      const docRef = this.$fire.firestore
+        .collection('users')
+        .doc(this.form.uuid)
 
-    await Promise.all([
-      // Update email and password
-      this.updateAuth(user, [
-        {
-          value:
-            this.form.email !== this.originalForm.email
-              ? this.form.email
-              : null,
-          method: 'updateEmail',
-        },
-        {
-          value: this.form.password,
-          method: 'updatePassword',
-        },
-      ]),
-      // Update profile
-      user.updateProfile({
-        displayName: this.form.displayName,
-        email: this.form.email,
-      }),
-      // Update document
-      docRef.update({
-        ...this.form,
-        password:
-          this.form.password !== ''
-            ? this.form.password
-            : this.passwordConfirm.value,
-      }),
-      // Reload form
-      this.loadForm(),
-    ]).then(() => {
-      this.setVuexUser(this.$fire.auth.currentUser)
+      // Get firebase current logged user
+      const user = this.$fire.auth.currentUser
 
-      this.passwordConfirm.openDialog = false
+      await Promise.all([
+        // Update email and password
+        this.updateAuth(user, [
+          {
+            value:
+              this.form.email !== this.originalForm.email
+                ? this.form.email
+                : null,
+            method: 'updateEmail',
+          },
+          {
+            value: this.form.password,
+            method: 'updatePassword',
+          },
+        ]),
+        // Update profile
+        user.updateProfile({
+          displayName: this.form.displayName,
+          email: this.form.email,
+        }),
+        // Update document
+        docRef.update({
+          ...this.form,
+          password:
+            this.form.password !== ''
+              ? this.form.password
+              : this.passwordConfirm.value,
+        }),
+        // Reload form
+        this.loadForm(),
+      ]).then(() => {
+        this.setVuexUser(this.$fire.auth.currentUser)
 
-      this.alert = {
-        text: 'Perfil atualizado com sucesso.',
-        open: true,
-      }
+        this.resetPasswordConfirm()
 
-      if (this.form.email !== this.originalForm.email) {
-        user
-          .sendEmailVerification({
-            url: window.document.location.origin,
-          })
-          .then(() => this.$router.replace('/verify-email'))
-      }
-    })
+        this.alert = {
+          text: 'Perfil atualizado com sucesso.',
+          open: true,
+        }
 
+        if (this.form.email !== this.originalForm.email) {
+          user
+            .sendEmailVerification({
+              url: window.document.location.origin,
+            })
+            .then(() => this.$router.replace('/verify-email'))
+        }
+      })
+    }
     this.loading = false
   }
 }

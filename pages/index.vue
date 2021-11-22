@@ -20,27 +20,5 @@ export default class IndexPage extends Vue {
   get user() {
     return this.$store.state.user.user
   }
-
-  mounted() {
-    // const db = this.$fire.firestore
-    /* db.collection('cities')
-      .add({ name: 'Tokyo', country: 'Japan' })
-      .then((docRef: any) => {
-        console.log('Document written with ID: ', docRef)
-        // docRef.update({ id: docRef.id })
-      })
-      .catch((error: any) => {
-        console.error('Error adding document: ', error)
-      }) */
-    /* db.collection('cities')
-      .get()
-      .then((querySnapshot: any) => {
-        const data = querySnapshot.docs.map((doc: any) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        console.log(data)
-      }) */
-  }
 }
 </script>

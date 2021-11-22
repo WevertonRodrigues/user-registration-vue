@@ -1,6 +1,6 @@
 <template>
   <v-container
-    class="login-page d-flex flex-column align-center justify-center"
+    class="d-flex flex-column align-center justify-center pa-0 pa-sm-4"
   >
     <Alert v-model="alert.open" :text="alert.text" :type="alert.type" />
 
@@ -20,11 +20,13 @@
         ref="recoveryObserver"
         tag="v-form"
         class="d-flex flex-column mt-6"
+        @submit.prevent="submit"
       >
         <FormsLogin
           v-model="form"
           :loading="loading"
           :filter-fields="filterFields"
+          @enter="submit"
         />
       </ValidationObserver>
     </FormsContainerCard>

@@ -1,35 +1,40 @@
 <template>
-  <v-container>
-    <v-row>
-      <!-- Col 1 -->
-      <v-col>
-        <div>
-          <!-- Basic info, Login -->
-          <div class="mx-2 mb-6">
-            <h3 class="mb-2">Informações básicas</h3>
-            <v-divider />
-          </div>
-          <FormsBasicInfo v-model="form" :loading="loading" />
-          <FormsLogin
-            v-model="form"
-            :loading="loading"
-            :filter-fields="filterLoginFields"
-            :config="loginConfig"
-          />
-        </div>
-      </v-col>
+  <v-row class="forms-main">
+    <!-- Col 1 -->
+    <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+      <!-- Basic info, Login -->
+      <div class="mb-6">
+        <h3 class="mb-2">Informações básicas</h3>
+        <v-divider />
+      </div>
+      <FormsBasicInfo
+        v-model="form"
+        :loading="loading"
+        @enter="$emit('enter')"
+      />
+      <FormsLogin
+        v-model="form"
+        :loading="loading"
+        :filter-fields="filterLoginFields"
+        :config="loginConfig"
+        @enter="$emit('enter')"
+      />
+    </v-col>
 
-      <!-- Col 2 -->
-      <v-col>
-        <!-- Address -->
-        <div class="mx-2 mb-6">
-          <h3 class="mb-2">Endereço</h3>
-          <v-divider />
-        </div>
-        <FormsAddress v-model="form.address" :loading="loading" />
-      </v-col>
-    </v-row>
-  </v-container>
+    <!-- Col 2 -->
+    <v-col cols="12" sm="6" md="6" lg="6" xl="6">
+      <!-- Address -->
+      <div class="mb-6">
+        <h3 class="mb-2">Endereço</h3>
+        <v-divider />
+      </div>
+      <FormsAddress
+        v-model="form.address"
+        :loading="loading"
+        @enter="$emit('enter')"
+      />
+    </v-col>
+  </v-row>
 </template>
 <script lang="ts">
 import { Component, Prop } from 'nuxt-property-decorator'

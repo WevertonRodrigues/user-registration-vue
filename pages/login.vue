@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    class="login-page d-flex flex-column align-center justify-center"
-    fluid
-  >
+  <v-container class="d-flex flex-column align-center justify-center">
     <Alert v-model="alert.open" :text="alert.text" />
 
     <FormsContainerCard
@@ -12,21 +9,23 @@
       @btnAction="submit"
     >
       <template #footer-area>
-        <nuxt-link to="/register" class="mr-6">Não possui conta?</nuxt-link>
+        <nuxt-link to="/register">Não possui conta?</nuxt-link>
       </template>
 
       <ValidationObserver
         ref="loginObserver"
         tag="v-form"
         class="d-flex flex-column mt-6"
+        @submit.prevent="submit"
       >
         <FormsLogin
           v-model="form"
           :loading="loading"
           :filter-fields="filterFields"
           :config="loginConfig"
+          @enter="submit"
         />
-        <nuxt-link class="text-center align-self-center mb-6" to="/recovery">
+        <nuxt-link class="text-center align-self-center mb-4" to="/recovery">
           Esqueceu a senha?
         </nuxt-link>
       </ValidationObserver>

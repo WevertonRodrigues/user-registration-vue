@@ -1,5 +1,9 @@
 <template>
-  <FormsBase v-model="form" v-bind="{ fields: fieldsFiltered, loading }" />
+  <FormsBase
+    v-model="form"
+    v-bind="{ fields: fieldsFiltered, loading }"
+    v-on="{ ...$listeners }"
+  />
 </template>
 <script lang="ts">
 import { Component, Prop, Watch } from 'nuxt-property-decorator'

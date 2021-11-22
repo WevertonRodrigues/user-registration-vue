@@ -3,6 +3,7 @@
     v-if="form"
     :value="form"
     v-bind="{ fields, loading }"
+    v-on="{ ...$listeners }"
     @input="handleAddressChange"
   />
 </template>
@@ -42,11 +43,11 @@ export default class FormsAddress extends FormMixin {
       prop: 'street',
       rules: ['required'],
     },
-    /* {
+    {
       label: 'Bairro',
       prop: 'district',
       rules: ['required'],
-    }, */
+    },
     {
       label: 'Número',
       prop: 'number',

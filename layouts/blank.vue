@@ -1,7 +1,13 @@
 <template>
   <v-app dark>
     <v-main>
-      <Nuxt />
+      <v-container>
+        <v-row class="d-flex justify-center">
+          <v-col md="10" lg="8" xl="8">
+            <Nuxt />
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
   </v-app>
 </template>
@@ -19,7 +25,6 @@ export default class BlankLayout extends Vue {}
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
   }
 }
 </style>

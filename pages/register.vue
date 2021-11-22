@@ -9,7 +9,7 @@
       @btnAction="submit"
     >
       <template #footer-area>
-        <nuxt-link to="/login" class="mr-6">Já possui conta?</nuxt-link>
+        <nuxt-link to="/login">Já possui conta?</nuxt-link>
       </template>
       <ValidationObserver ref="registerObserver" class="mx-2" tag="v-form">
         <FormsMain v-model="form" :loading="loading" />
@@ -60,44 +60,47 @@ export default class LoginPage extends Vue {
     return item.prop !== 'passwordRepeat'
   }
 
+  test() {
+    const ref = this.$fire.firestore.collection('users').doc()
+
+    this.form.uuid = ref.id
+    ref.set(this.form)
+  }
+
   async submit() {
-    this.loading = true
     const valid = await this.registerObserver.validate()
 
     if (valid) {
+      this.loading = true
       delete (this.form as any).passwordRepeat
 
-      let user: any = {}
+      const ref = this.$fire.firestore.collection('users').doc()
 
-      const ref = this.$fire.firestore.collection('users')
+      this.form.uuid = ref.id
 
-      Promise.all([
+      await Promise.all([
         // Insert user info in db
-        ref.add(this.form).then((docRef: any) => {
-          docRef.update({
-            ...this.form,
-            uuid: docRef.id,
-          })
-        }),
+        ref.set(this.form),
         // Insert profile
-        this.$fire.auth
-          .createUserWithEmailAndPassword(this.form.email, this.form.password)
-          .then(() => {
-            user = this.$fire.auth.currentUser
-
-            Promise.all([
-              // Update profile
-              user.updateProfile({
-                displayName: this.form.displayName,
-              }),
-              // Send email verification
-              user.sendEmailVerification({
-                url: window.document.location.origin,
-              }),
-            ])
-          }),
+        this.$fire.auth.createUserWithEmailAndPassword(
+          this.form.email,
+          this.form.password
+        ),
       ])
         .then(() => {
+          const user = this.$fire.auth.currentUser
+
+          Promise.all([
+            // Update profile
+            user.updateProfile({
+              displayName: this.form.displayName,
+            }),
+            // Send email verification
+            user.sendEmailVerification({
+              url: window.document.location.origin,
+            }),
+          ])
+
           // Dispatch user store
           this.$store.dispatch('user/onAuthStateChangedAction', {
             authUser: {
@@ -118,8 +121,8 @@ export default class LoginPage extends Vue {
             open: true,
           }
         })
+      this.loading = false
     }
-    this.loading = false
   }
 }
 </script>
