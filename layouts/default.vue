@@ -13,13 +13,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component } from 'nuxt-property-decorator'
 import { MenuItem } from '~/components/SideBar.vue'
+import PageTitleMixin from '~/mixins/pageTitleMixin'
 
 @Component({
   middleware: ['auth'],
 })
-export default class DefaultLayout extends Vue {
+export default class DefaultLayout extends PageTitleMixin {
   openSideBar = true
 
   items: MenuItem[] = [
@@ -34,6 +35,12 @@ export default class DefaultLayout extends Vue {
       icon: 'mdi-cog',
       title: 'Configurações',
       to: '/settings',
+    },
+    {
+      id: 2,
+      title: 'Verificar E-mail',
+      to: '/verify-email',
+      hide: true,
     },
   ]
 

@@ -1,20 +1,16 @@
 <template>
   <v-navigation-drawer v-model="openSideBar" clipped fixed app>
     <v-list>
-      <v-list-item
-        v-for="(item, i) in items"
-        :key="i"
-        :to="item.to"
-        router
-        exact
-      >
-        <v-list-item-action>
-          <v-icon>{{ item.icon }}</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title v-text="item.title" />
-        </v-list-item-content>
-      </v-list-item>
+      <template v-for="(item, i) in items">
+        <v-list-item v-if="!item.hide" :key="i" :to="item.to" router exact>
+          <v-list-item-action>
+            <v-icon>{{ item.icon }}</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.title" />
+          </v-list-item-content>
+        </v-list-item>
+      </template>
     </v-list>
 
     <template #append>
@@ -30,11 +26,11 @@ import { Vue, Component, Prop, VModel } from 'nuxt-property-decorator'
 
 export interface MenuItem {
   id: number | string
-  icon: string
+  icon?: string
   title: string
   to: string
+  hide?: boolean
 }
-
 
 @Component
 export default class SideBar extends Vue {

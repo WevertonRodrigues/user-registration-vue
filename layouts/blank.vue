@@ -13,10 +13,30 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'nuxt-property-decorator'
+import { Component } from 'nuxt-property-decorator'
+import { MenuItem } from '~/components/SideBar.vue'
+import PageTitleMixin from '~/mixins/pageTitleMixin'
 
 @Component
-export default class BlankLayout extends Vue {}
+export default class BlankLayout extends PageTitleMixin {
+  items: MenuItem[] = [
+    {
+      id: 0,
+      title: 'Login',
+      to: '/login',
+    },
+    {
+      id: 1,
+      title: 'Signin',
+      to: '/register',
+    },
+    {
+      id: 2,
+      title: 'Recuperar Senha',
+      to: '/recovery',
+    },
+  ]
+}
 </script>
 
 <style lang="scss">
