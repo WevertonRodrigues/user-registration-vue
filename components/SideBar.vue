@@ -15,7 +15,9 @@
 
     <template #append>
       <div class="pa-2">
-        <v-btn block @click="logout"> Sair </v-btn>
+        <v-btn block @click="logout">
+          <span class="mr-2">Sair</span> <v-icon>mdi-logout</v-icon>
+        </v-btn>
       </div>
     </template>
   </v-navigation-drawer>
@@ -24,7 +26,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, VModel } from 'nuxt-property-decorator'
 
-export interface MenuItem {
+export interface SideBarItem {
   id: number | string
   icon?: string
   title: string
@@ -35,7 +37,7 @@ export interface MenuItem {
 @Component
 export default class SideBar extends Vue {
   @Prop({ type: Array, default: () => [] })
-  items!: MenuItem[]
+  items!: SideBarItem[]
 
   @VModel({ type: Boolean, default: false })
   openSideBar!: boolean

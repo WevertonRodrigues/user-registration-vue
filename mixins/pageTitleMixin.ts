@@ -6,9 +6,9 @@ export default class PageTitleMixin extends Vue {
 
   head() {
     return {
-      title: { d: 'Registro de Usuários', n: this.currentRoute },
-      titleTemplate: ({ d, n }: any) => {
-        return `${d} - ${n}`
+      title: { n: 'Registro de Usuários', r: this.currentRoute },
+      titleTemplate: ({ n, r }: any) => {
+        return `${n} - ${r}`
       },
     }
   }

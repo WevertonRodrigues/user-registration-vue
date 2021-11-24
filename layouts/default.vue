@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import { Component } from 'nuxt-property-decorator'
-import { MenuItem } from '~/components/SideBar.vue'
+import { SideBarItem } from '~/components/SideBar.vue'
 import PageTitleMixin from '~/mixins/pageTitleMixin'
 
 @Component({
@@ -23,7 +23,7 @@ import PageTitleMixin from '~/mixins/pageTitleMixin'
 export default class DefaultLayout extends PageTitleMixin {
   openSideBar = true
 
-  items: MenuItem[] = [
+  items: SideBarItem[] = [
     {
       id: 0,
       icon: 'mdi-home',
@@ -45,9 +45,7 @@ export default class DefaultLayout extends PageTitleMixin {
   ]
 
   get title() {
-    return this.$fire.auth.currentUser
-      ? `Olá, ${this.user.displayName}`
-      : 'Olá visitante'
+    return this.user?.displayName ?? null
   }
 
   get user() {
@@ -56,11 +54,12 @@ export default class DefaultLayout extends PageTitleMixin {
 }
 </script>
 <style lang="scss">
+html {
+  overflow-y: auto;
+}
+
 .v-main {
   &__wrap {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 100%;
   }
 }

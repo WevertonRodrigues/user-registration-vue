@@ -14,12 +14,12 @@
 
 <script lang="ts">
 import { Component } from 'nuxt-property-decorator'
-import { MenuItem } from '~/components/SideBar.vue'
+import { SideBarItem } from '~/components/SideBar.vue'
 import PageTitleMixin from '~/mixins/pageTitleMixin'
 
 @Component
 export default class BlankLayout extends PageTitleMixin {
-  items: MenuItem[] = [
+  items: SideBarItem[] = [
     {
       id: 0,
       title: 'Login',
@@ -28,7 +28,7 @@ export default class BlankLayout extends PageTitleMixin {
     {
       id: 1,
       title: 'Signin',
-      to: '/register',
+      to: '/signin',
     },
     {
       id: 2,
@@ -40,6 +40,10 @@ export default class BlankLayout extends PageTitleMixin {
 </script>
 
 <style lang="scss">
+html {
+  overflow-y: auto;
+}
+
 .v-main {
   &__wrap {
     display: flex;
