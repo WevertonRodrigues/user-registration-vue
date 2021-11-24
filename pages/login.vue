@@ -9,7 +9,7 @@
       @btnAction="submit"
     >
       <template #footer-area>
-        <nuxt-link to="/register">Não possui conta?</nuxt-link>
+        <nuxt-link to="/signin">Não possui conta?</nuxt-link>
       </template>
 
       <ValidationObserver

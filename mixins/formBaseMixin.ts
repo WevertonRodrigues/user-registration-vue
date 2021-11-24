@@ -10,7 +10,10 @@ export interface Field {
   customMessages?: Record<string, any>
   appendIcon?: {
     icon: string
-    click: (field: Field) => void
+    click?: (field: Field) => void
+  }
+  prependIcon?: {
+    icon: string
   }
 }
 

@@ -3,7 +3,7 @@
     <Alert v-model="alert.open" :text="alert.text" />
 
     <FormsContainerCard
-      title="Olá visitante"
+      title="Olá, visitante"
       text-btn-action="Criar conta"
       :loading="loading"
       @btnAction="submit"
@@ -58,13 +58,6 @@ export default class LoginPage extends Vue {
 
   filterFields(item: Field) {
     return item.prop !== 'passwordRepeat'
-  }
-
-  test() {
-    const ref = this.$fire.firestore.collection('users').doc()
-
-    this.form.uuid = ref.id
-    ref.set(this.form)
   }
 
   async submit() {

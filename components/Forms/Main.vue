@@ -4,22 +4,28 @@
     <v-col cols="12" sm="6" md="6" lg="6" xl="6">
       <!-- Basic info, Login -->
       <div class="mb-6">
-        <h3 class="mb-2">Informações básicas</h3>
+        <h3 class="d-flex align-center mb-2">
+          <v-icon class="mr-2">mdi-card-account-details</v-icon> Informações
+          básicas
+        </h3>
         <v-divider />
       </div>
-      <div :class="[{ 'gap-skeleton': skeletonLoading }]">
+      <div
+        :class="['gap-between', { 'gap-between-skeleton': skeletonLoading }]"
+      >
         <FormsBasicInfo
           v-model="form"
-          :loading="loading"
-          :skeleton-loading="skeletonLoading"
+          v-bind="{ loading, skeletonLoading }"
           @enter="$emit('enter')"
         />
         <FormsLogin
           v-model="form"
-          :loading="loading"
-          :filter-fields="filterLoginFields"
-          :config="loginConfig"
-          :skeleton-loading="skeletonLoading"
+          v-bind="{
+            loading,
+            filterLoginFields,
+            config: normalizedLoginConfig,
+            skeletonLoading,
+          }"
           @enter="$emit('enter')"
         />
       </div>
@@ -29,7 +35,9 @@
     <v-col cols="12" sm="6" md="6" lg="6" xl="6">
       <!-- Address -->
       <div class="mb-6">
-        <h3 class="mb-2">Endereço</h3>
+        <h3 class="d-flex align-center mb-2">
+          <v-icon class="mr-2">mdi-home-map-marker</v-icon>Endereço
+        </h3>
         <v-divider />
       </div>
       <FormsAddress
@@ -42,7 +50,7 @@
   </v-row>
 </template>
 <script lang="ts">
-import { Component, Prop } from 'nuxt-property-decorator'
+import { Component, Prop, Watch } from 'nuxt-property-decorator'
 import { Field } from '~/mixins/formBaseMixin'
 import FormMixin from '~/mixins/formMixin'
 
@@ -53,14 +61,47 @@ export default class FormsMain extends FormMixin {
 
   @Prop({ type: Object, default: () => null })
   loginConfig!: Record<string, Partial<Field>> | null
+
+  normalizedLoginConfig: any = {}
+
+  removeIconsLoginConfig: Record<string, Partial<Field>> = {
+    email: {
+      prependIcon: null as any,
+    },
+    password: {
+      prependIcon: null as any,
+    },
+  }
+
+  @Watch('loginConfig', { deep: true })
+  onLoginConfigChange(value: Record<string, Partial<Field>>) {
+    for (const v in this.removeIconsLoginConfig) {
+      if (v in value) {
+        Object.assign(value[v], this.removeIconsLoginConfig[v])
+      } else {
+        this.$set(value, v, this.removeIconsLoginConfig[v])
+      }
+    }
+
+    this.normalizedLoginConfig = value
+  }
+
+  created() {
+    this.onLoginConfigChange(this.loginConfig ?? {})
+  }
 }
 </script>
 <style lang="scss">
 .forms-main {
-  .gap-skeleton {
-    display: flex;
-    flex-direction: column;
-    gap: 1.885em !important;
+  .gap {
+    &-between {
+      display: flex;
+      flex-direction: column;
+      gap: 1em !important;
+      &-skeleton {
+        gap: 2.885em !important;
+      }
+    }
   }
 }
 </style>

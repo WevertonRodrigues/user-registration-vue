@@ -27,6 +27,7 @@ export default class FormsBasicInfo extends FormMixin {
     {
       label: 'PIS',
       prop: 'pis',
+      type: 'number',
       rules: ['required'],
     },
   ]

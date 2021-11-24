@@ -21,6 +21,7 @@
         :error-messages="errors.concat(field.errors || [])"
         :type="field.type"
         :disabled="loading"
+        :prepend-icon="field.prependIcon && field.prependIcon.icon"
         :append-icon="field.appendIcon && field.appendIcon.icon"
         outlined
         @keydown="keydowEmit"
@@ -41,10 +42,11 @@ export default class FormsBase extends FormBaseMixin {}
 </script>
 <style lang="scss">
 .forms-base {
+  display: flex;
+  flex-direction: column;
+  gap: 1em !important;
   &.gap-skeleton {
-    display: flex;
-    flex-direction: column;
-    gap: 1.885em !important;
+    gap: 2.885em !important;
   }
   .v-skeleton-loader {
     &__bone {

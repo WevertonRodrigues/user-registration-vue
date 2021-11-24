@@ -30,12 +30,18 @@ export default class FormsLogin extends FormMixin {
       label: 'E-mail',
       prop: 'email',
       rules: ['required', 'email'],
+      prependIcon: {
+        icon: 'mdi-account',
+      },
     },
     {
       label: 'Senha',
       prop: 'password',
       type: 'password',
       rules: ['required', 'min:8', 'passwordStrength'],
+      prependIcon: {
+        icon: 'mdi-lock',
+      },
       appendIcon: this.appendIcon,
     },
     {
