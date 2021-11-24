@@ -14,6 +14,7 @@ export default class PageTitleMixin extends Vue {
   }
 
   get currentRoute() {
-    return this.items.find((i) => i.to === this.$route.fullPath)?.title
+    return this.items.find((i) => this.$route.matched[0].regex.test(i.to))
+      ?.title
   }
 }

@@ -32,7 +32,7 @@ export default class BlankLayout extends PageTitleMixin {
     },
     {
       id: 2,
-      title: 'Recuperar Senha',
+      title: 'Recuperar senha',
       to: '/recovery',
     },
   ]
@@ -49,6 +49,9 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
+    a:hover {
+      color: #757575;
+    }
   }
 }
 </style>
